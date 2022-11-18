@@ -2,7 +2,7 @@
 
 ## Overview
 
-A simple socks5 server for tailnet.
+A simple socks5 server for tailnet without installing tailscale client.
 
 ## Usage
 
