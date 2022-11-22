@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/things-go/go-socks5 v0.0.2
-	tailscale.com v1.32.2
+	tailscale.com v1.32.3
 )
 
 require (
