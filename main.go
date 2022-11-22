@@ -4,15 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 
-	"github.com/things-go/go-socks5"
+	"tailscale.com/net/socks5"
 	"tailscale.com/tsnet"
 )
 
 var (
 	hostname = flag.String("h", "tailsocks5", "hostname for socks5 server")
-	port = flag.Int("p", 1080, "port for socks5 server")
+	port     = flag.Int("p", 1080, "port for socks5 server")
 )
 
 func main() {
@@ -29,10 +28,7 @@ func main() {
 	}
 	defer ln.Close()
 
-	server := socks5.NewServer(
-		socks5.WithLogger(socks5.NewLogger(log.New(os.Stdout, "socks5: ", log.LstdFlags))),
-	)
-
+	server := &socks5.Server{}
 	if err := server.Serve(ln); err != nil {
 		log.Fatal(err)
 	}

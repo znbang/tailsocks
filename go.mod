@@ -2,10 +2,7 @@ module github.com/znbang/tailsocks5
 
 go 1.19
 
-require (
-	github.com/things-go/go-socks5 v0.0.2
-	tailscale.com v1.32.3
-)
+require tailscale.com v1.32.3
 
 require (
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
