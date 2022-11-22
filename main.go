@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	hostname = flag.String("hostname", "", "hostname for socks5 server")
+	hostname = flag.String("hostname", "tailsocks5", "hostname for socks5 server")
 	port = flag.Int("port", 1080, "port for socks5 server")
 )
 
