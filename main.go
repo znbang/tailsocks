@@ -89,7 +89,7 @@ func serveSocks(ln net.Listener) {
 
 func main() {
 	var (
-		hostname = flag.String("hostname", "tailproxy", "hostname on tailnet, default is tailproxy")
+		hostname = flag.String("hostname", "tailsocks", "hostname on tailnet, default is tailsocks")
 		addr     = flag.String("addr", ":1080", "proxy address, default is :1080")
 	)
 
