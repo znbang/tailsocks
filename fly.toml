@@ -1,14 +1,21 @@
-# fly.toml file generated for tailsocks on 2022-11-18T13:19:52+08:00
+# fly.toml app configuration file generated for tailsocks on 2023-05-05T14:45:05+08:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
 app = "tailsocks"
+primary_region = "lax"
 kill_signal = "SIGINT"
-kill_timeout = 5
-processes = []
-
-[env]
+kill_timeout = "5s"
 
 [experimental]
-  allowed_public_ports = []
   auto_rollback = true
 
 [[services]]
+  protocol = "tcp"
+  internal_port = 8080
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 100
+    soft_limit = 80
