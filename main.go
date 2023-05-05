@@ -55,7 +55,10 @@ func proxyConnect(w http.ResponseWriter, r *http.Request) {
 }
 
 func tunnelConn(dst io.WriteCloser, src io.ReadCloser) {
-	_, _ = io.Copy(dst, src)
+	if _, err := io.Copy(dst, src); err != nil {
+		log.Println("Copy failed:", err)
+	}
+
 	_ = dst.Close()
 	_ = src.Close()
 }
