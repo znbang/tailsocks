@@ -35,13 +35,15 @@ func proxyConnect(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
 	}
+	defer targetConn.Close()
 
-	clientConn, _, err := w.(http.Hijacker).Hijack()
+	clientConn, clientBuf, err := w.(http.Hijacker).Hijack()
 	if err != nil {
 		log.Println("Hijack failed:", err)
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		return
 	}
+	defer clientConn.Close()
 
 	if _, err = io.WriteString(clientConn, "HTTP/1.1 200 OK\r\n\r\n"); err != nil {
 		log.Println("Write response code 200 failed:", err)
@@ -50,17 +52,24 @@ func proxyConnect(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("CONNECT from %v to %v", r.RemoteAddr, r.Host)
 
-	go tunnelConn(targetConn, clientConn)
-	go tunnelConn(clientConn, targetConn)
-}
-
-func tunnelConn(dst io.WriteCloser, src io.ReadCloser) {
-	if _, err := io.Copy(dst, src); err != nil {
-		log.Println("Copy failed:", err)
+	var clientSrc io.Reader = clientBuf
+	if clientBuf.Reader.Buffered() == 0 {
+		clientSrc = clientConn
 	}
 
-	_ = dst.Close()
-	_ = src.Close()
+	errc := make(chan error, 1)
+	go func() {
+		_, err := io.Copy(clientConn, targetConn)
+		errc <- err
+	}()
+	go func() {
+		_, err := io.Copy(targetConn, clientSrc)
+		errc <- err
+	}()
+	err = <-errc
+	if err != nil {
+		log.Println("Copy failed:", err)
+	}
 }
 
 func proxyGet(w http.ResponseWriter, r *http.Request) {
