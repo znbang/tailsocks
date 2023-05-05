@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 
 	"tailscale.com/net/proxymux"
 	"tailscale.com/net/socks5"
@@ -87,6 +88,25 @@ func serveSocks(ln net.Listener) {
 	}
 }
 
+func listen(hostname, addr string) (net.Listener, func(), error) {
+	if os.Getenv("TS_AUTHKEY") == "" {
+		ln, err := net.Listen("tcp", addr)
+		closeFn := func() {}
+		return ln, closeFn, err
+	} else {
+		s := &tsnet.Server{
+			Hostname:  hostname,
+			Ephemeral: true,
+		}
+		closeFn := func() {
+			_ = s.Close()
+		}
+
+		ln, err := s.Listen("tcp", addr)
+		return ln, closeFn, err
+	}
+}
+
 func main() {
 	var (
 		hostname = flag.String("hostname", "tailsocks", "hostname on tailnet, default is tailsocks")
@@ -95,13 +115,7 @@ func main() {
 
 	flag.Parse()
 
-	s := &tsnet.Server{
-		Hostname:  *hostname,
-		Ephemeral: true,
-	}
-	defer s.Close()
-
-	ln, err := s.Listen("tcp", *addr)
+	ln, closeFn, err := listen(*hostname, *addr)
 	if err != nil {
 		log.Fatal("Listen failed:", err)
 	}
@@ -111,4 +125,5 @@ func main() {
 	socksListener, httpListener := proxymux.SplitSOCKSAndHTTP(ln)
 	go serveSocks(socksListener)
 	serveHttp(httpListener)
+	closeFn()
 }
