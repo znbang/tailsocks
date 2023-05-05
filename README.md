@@ -1,8 +1,8 @@
-# tailsocks5
+# tailproxy
 
 ## Overview
 
-A simple socks5 server for tailnet without installing tailscale client.
+A simple socks5 and http proxy server for tailnet without installing tailscale client.
 
 ## Usage
 

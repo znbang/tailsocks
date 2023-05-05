@@ -5,5 +5,5 @@ COPY . .
 RUN go build -trimpath -ldflags "-s -w"
 
 FROM alpine:latest
-COPY --from=builder /app/tailsocks5 .
-ENTRYPOINT /tailsocks5 -h "$FLY_APP_NAME-$FLY_REGION"
+COPY --from=builder /app/tailproxy .
+ENTRYPOINT /tailproxy -h "$FLY_APP_NAME-$FLY_REGION"

@@ -1,6 +1,6 @@
-# fly.toml file generated for tailsocks5 on 2022-11-18T13:19:52+08:00
+# fly.toml file generated for tailproxy on 2022-11-18T13:19:52+08:00
 
-app = "tailsocks5"
+app = "tailproxy"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []

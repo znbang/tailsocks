@@ -1,4 +1,4 @@
-module github.com/znbang/tailsocks5
+module github.com/znbang/tailproxy
 
 go 1.20
 
