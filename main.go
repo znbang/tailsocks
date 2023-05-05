@@ -35,16 +35,16 @@ func proxyConnect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-
-	hj, ok := w.(http.Hijacker)
-	if !ok {
-		log.Fatal("Unable to hijack connection")
+	clientConn, _, err := w.(http.Hijacker).Hijack()
+	if err != nil {
+		log.Println("Hijack failed:", err)
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+		return
 	}
 
-	clientConn, _, err := hj.Hijack()
-	if err != nil {
-		log.Fatal("Hijack failed:", err)
+	if _, err = io.WriteString(clientConn, "HTTP/1.1 200 OK\r\n\r\n"); err != nil {
+		log.Println("Write response code 200 failed:", err)
+		return
 	}
 
 	log.Printf("CONNECT from %v to %v", r.RemoteAddr, r.Host)
