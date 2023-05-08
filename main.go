@@ -15,16 +15,15 @@ import (
 	"tailscale.com/tsnet"
 )
 
-type proxyServer struct {
-}
-
-func (p *proxyServer) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	if req.Method == http.MethodConnect {
-		proxyConnect(w, req)
-	} else if req.Method == http.MethodGet {
-		proxyGet(w, req)
-	} else {
-		http.Error(w, "only supports CONNECT and GET", http.StatusMethodNotAllowed)
+func handleProxy() http.HandlerFunc {
+	return func(w http.ResponseWriter, req *http.Request) {
+		if req.Method == http.MethodConnect {
+			proxyConnect(w, req)
+		} else if req.Method == http.MethodGet {
+			proxyGet(w, req)
+		} else {
+			http.Error(w, "only supports CONNECT and GET", http.StatusMethodNotAllowed)
+		}
 	}
 }
 
@@ -86,9 +85,7 @@ func proxyGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveHttp(ln net.Listener) {
-	proxy := &proxyServer{}
-
-	if err := http.Serve(ln, proxy); err != nil {
+	if err := http.Serve(ln, handleProxy()); err != nil {
 		log.Fatal("serveHttp failed:", err)
 	}
 }
