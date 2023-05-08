@@ -45,7 +45,7 @@ func proxyConnect(w http.ResponseWriter, r *http.Request) {
 	defer clientConn.Close()
 
 	if _, err = io.WriteString(clientConn, "HTTP/1.1 200 OK\r\n\r\n"); err != nil {
-		log.Println("Write response code 200 failed:", err)
+		log.Println("Write 200 OK failed:", err)
 		return
 	}
 
