@@ -2,7 +2,7 @@ module github.com/znbang/tailsocks
 
 go 1.20
 
-require tailscale.com v1.40.0
+require tailscale.com v1.40.1
 
 require (
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
