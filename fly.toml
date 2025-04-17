@@ -1,0 +1,31 @@
+app = "tailsocks"
+primary_region = "lax"
+kill_signal = "SIGINT"
+kill_timeout = "5s"
+
+[build]
+  image = "tailscale/tailscale"
+
+[env]
+  TS_SOCKS5_SERVER = "0.0.0.0:1080"
+  TS_OUTBOUND_HTTP_PROXY_LISTEN = "0.0.0.0:3128"
+  TS_HOSTNAME = "tailsocks-nrt"
+
+[processes]
+  app = "/usr/bin/env PATH=$PATH:/usr/local/bin /usr/local/bin/containerboot"
+
+[[services]]
+  processes = ["app"]
+  internal_port = 1080
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 1080
+
+[[services]]
+  processes = ["app"]
+  internal_port = 3128
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 3128
